@@ -11,6 +11,7 @@ A Neovim plugin that automatically moves markdown files based on tags in their Y
 - Compatible with lazy.nvim
 - Customizable configuration
 - Ignore specific directories from being processed
+- Default ignored directories for common development folders
 
 ## Installation
 
@@ -69,8 +70,11 @@ require('markdown-mover').setup({
   verbose = true,        -- Show notifications
   keymap = "<leader>mm", -- Keymap for manual moving (empty to disable)
   ignore_dirs = {        -- Directories to ignore (can be patterns)
-    "~/Documents/archive/.*",  -- Ignore all files in archive directory
-    ".*/drafts/.*",           -- Ignore all draft directories
+    ".*/meta/.*",        -- Ignore meta directories
+    ".*/logs/.*",        -- Ignore log directories
+    ".*/src/.*",         -- Ignore source code directories
+    ".*/notebooks/.*",   -- Ignore notebook directories
+    "~/Documents/archive/.*",  -- Additional custom ignore patterns
   }
 })
 ```
@@ -107,3 +111,5 @@ If this file has the tag `draft` and you've configured a mapping for that tag, p
 - The plugin only moves files if they have tags that match your configured tag rules
 - If a file has multiple matching tags, the first matching tag is used
 - The file is only moved if it's a valid markdown file with proper YAML frontmatter
+- By default, the plugin ignores files in directories containing: meta, logs, src, and notebooks
+- You can override the default ignored directories by providing your own `ignore_dirs` configuration

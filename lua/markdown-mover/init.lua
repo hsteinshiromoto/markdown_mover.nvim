@@ -13,7 +13,12 @@ local config = {
   auto_move = false,   -- Whether to move automatically on save
   verbose = true,      -- Show notifications
   keymap = "<leader>mm", -- Default keymap for moving markdown files
-  ignore_dirs = {}     -- Directories to ignore (can be patterns)
+  ignore_dirs = {      -- Default directories to ignore
+    ".*/meta/.*",      -- Ignore meta directories
+    ".*/logs/.*",      -- Ignore log directories
+    ".*/src/.*",       -- Ignore source code directories
+    ".*/notebooks/.*", -- Ignore notebook directories
+  }
 }
 
 -- Functions
