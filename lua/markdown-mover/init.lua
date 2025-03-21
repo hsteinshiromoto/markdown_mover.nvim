@@ -12,7 +12,8 @@ local config = {
   default_path = nil,  -- Default destination if no tag matches
   auto_move = false,   -- Whether to move automatically on save
   verbose = true,      -- Show notifications
-  keymap = "<leader>mm" -- Default keymap for moving markdown files
+  keymap = "<leader>mm", -- Default keymap for moving markdown files
+  ignore_dirs = {}     -- Directories to ignore (can be patterns)
 }
 
 -- Functions
@@ -65,6 +66,16 @@ local function parse_yaml_frontmatter()
   return frontmatter
 end
 
+local function is_in_ignored_dir(filepath)
+  local normalized_path = vim.fn.fnamemodify(filepath, ":p")
+  for _, pattern in ipairs(config.ignore_dirs) do
+    if normalized_path:match(pattern) then
+      return true
+    end
+  end
+  return false
+end
+
 local function process_markdown_file()
   local current_file = vim.fn.expand("%:p")
   local filetype = vim.bo.filetype
@@ -73,6 +84,14 @@ local function process_markdown_file()
   if not (current_file:match("%.md$") and filetype == "markdown") then
     if config.verbose then
       vim.notify("Not a markdown file, skipping", vim.log.levels.DEBUG)
+    end
+    return false
+  end
+
+  -- Check if file is in an ignored directory
+  if is_in_ignored_dir(current_file) then
+    if config.verbose then
+      vim.notify("File is in an ignored directory, skipping", vim.log.levels.DEBUG)
     end
     return false
   end

@@ -10,6 +10,7 @@ A Neovim plugin that automatically moves markdown files based on tags in their Y
 - Works only when tags match configured destinations
 - Compatible with lazy.nvim
 - Customizable configuration
+- Ignore specific directories from being processed
 
 ## Installation
 
@@ -67,6 +68,10 @@ require('markdown-mover').setup({
   auto_move = false,     -- Move files automatically on save
   verbose = true,        -- Show notifications
   keymap = "<leader>mm", -- Keymap for manual moving (empty to disable)
+  ignore_dirs = {        -- Directories to ignore (can be patterns)
+    "~/Documents/archive/.*",  -- Ignore all files in archive directory
+    ".*/drafts/.*",           -- Ignore all draft directories
+  }
 })
 ```
 
