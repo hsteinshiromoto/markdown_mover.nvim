@@ -19,9 +19,9 @@ A Neovim plugin that automatically moves markdown files based on tags in their Y
 -- In your lazy.nvim plugins file
 return {
   {
-    "yourusername/markdown-mover", -- For GitHub hosted plugin
+    "hsteinshiromoto/markdown-mover.nvim", -- For GitHub hosted plugin
     -- or local plugin in your config
-    -- "markdown-mover",
+    -- dir = "~/path/to/markdown-mover.nvim",
     -- dev = true, -- For local development
     ft = "markdown",
     opts = {
