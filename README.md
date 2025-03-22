@@ -12,6 +12,7 @@ A Neovim plugin that automatically moves markdown files based on tags in their Y
 - Customizable configuration
 - Ignore specific directories from being processed
 - Default ignored directories for common development folders
+- Supports paths relative to git repository root
 
 ## Installation
 
@@ -29,9 +30,9 @@ return {
     opts = {
       tag_field = "tags",
       tag_rules = {
-        ["project"] = "~/Documents/projects/",
-        ["draft"] = "~/Documents/drafts/",
-        ["blog"] = "~/Documents/blog/",
+        ["project"] = "docs/projects/",
+        ["draft"] = "docs/drafts/",
+        ["blog"] = "docs/blog/",
       },
       keymap = "<leader>mm",
     },
@@ -61,11 +62,11 @@ For local development inside your Neovim config:
 require('markdown-mover').setup({
   tag_field = "tags",    -- The name of the frontmatter field containing tags
   tag_rules = {
-    ["project"] = "~/Documents/projects/",
-    ["draft"] = "~/Documents/drafts/",
-    ["blog"] = "~/Documents/blog/",
+    ["project"] = "docs/projects/",  -- Relative to git root
+    ["draft"] = "docs/drafts/",      -- Relative to git root
+    ["blog"] = "docs/blog/",         -- Relative to git root
   },
-  default_path = nil,    -- Default path if no matching tag (nil to disable)
+  default_path = "docs/uncategorized/",  -- Default path if no matching tag (nil to disable)
   auto_move = false,     -- Move files automatically on save
   verbose = true,        -- Show notifications
   keymap = "<leader>mm", -- Keymap for manual moving (empty to disable)
@@ -77,6 +78,23 @@ require('markdown-mover').setup({
     "~/Documents/archive/.*",  -- Additional custom ignore patterns
   }
 })
+```
+
+## Path Resolution
+
+The plugin now supports paths relative to your git repository root:
+
+- If a path starts with `~` or `/`, it's treated as an absolute path
+- Otherwise, the path is resolved relative to your git repository root
+- If you're not in a git repository, the current directory is used as the root
+
+Example path configurations:
+```lua
+tag_rules = {
+  ["draft"] = "docs/drafts/",           -- Relative to git root
+  ["archive"] = "~/Documents/archive/",  -- Absolute path
+  ["temp"] = "/tmp/notes/"              -- Absolute path
+}
 ```
 
 ## Usage
@@ -113,3 +131,4 @@ If this file has the tag `draft` and you've configured a mapping for that tag, p
 - The file is only moved if it's a valid markdown file with proper YAML frontmatter
 - By default, the plugin ignores files in directories containing: meta, logs, src, and notebooks
 - You can override the default ignored directories by providing your own `ignore_dirs` configuration
+- Paths in tag rules and default_path can be relative to git root or absolute paths

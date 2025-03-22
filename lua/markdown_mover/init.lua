@@ -7,7 +7,7 @@ local M = {}
 local config = {
   tag_field = "tags",  -- The field name in frontmatter containing tags
   tag_rules = {
-    -- Example: ["draft"] = "~/Documents/drafts/"
+    -- Example: ["draft"] = "docs/drafts/"
   },
   default_path = nil,  -- Default destination if no tag matches
   auto_move = false,   -- Whether to move automatically on save
@@ -20,6 +20,35 @@ local config = {
     ".*/notebooks/.*", -- Ignore notebook directories
   }
 }
+
+-- Function to find git root directory
+local function find_git_root()
+  local current_dir = vim.fn.expand("%:p:h")
+  local git_root = vim.fn.systemlist("git -C " .. vim.fn.fnameescape(current_dir) .. " rev-parse --show-toplevel")[1]
+  if vim.v.shell_error ~= 0 then
+    return nil
+  end
+  return git_root
+end
+
+-- Function to resolve path relative to git root
+local function resolve_path(path)
+  if not path then return nil end
+  
+  -- If path starts with ~ or /, treat as absolute
+  if path:match("^[~/]") then
+    return vim.fn.fnamemodify(path, ":p")
+  end
+  
+  -- Otherwise, treat as relative to git root
+  local git_root = find_git_root()
+  if not git_root then
+    vim.notify("Not in a git repository, using current directory as root", vim.log.levels.WARN)
+    git_root = vim.fn.getcwd()
+  end
+  
+  return vim.fn.fnamemodify(git_root .. "/" .. path, ":p")
+end
 
 -- Functions
 local function parse_yaml_frontmatter()
@@ -131,8 +160,14 @@ local function process_markdown_file()
     local destination = config.tag_rules[tag]
     if destination then
       tag_matched = true
+      -- Resolve destination path relative to git root
+      local dest_dir = resolve_path(destination)
+      if not dest_dir then
+        vim.notify(string.format("Failed to resolve destination path for tag '%s'", tag), vim.log.levels.ERROR)
+        return false
+      end
+      
       -- Ensure destination directory exists
-      local dest_dir = vim.fn.fnamemodify(destination, ":p")
       if vim.fn.isdirectory(dest_dir) == 0 then
         vim.fn.mkdir(dest_dir, "p")
       end
@@ -163,7 +198,12 @@ local function process_markdown_file()
   
   -- If we have a default path and no specific rule matched
   if not tag_matched and config.default_path and config.default_path ~= "" then
-    local dest_dir = vim.fn.fnamemodify(config.default_path, ":p")
+    local dest_dir = resolve_path(config.default_path)
+    if not dest_dir then
+      vim.notify("Failed to resolve default destination path", vim.log.levels.ERROR)
+      return false
+    end
+    
     if vim.fn.isdirectory(dest_dir) == 0 then
       vim.fn.mkdir(dest_dir, "p")
     end
