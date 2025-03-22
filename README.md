@@ -22,9 +22,9 @@ A Neovim plugin that automatically moves markdown files based on tags in their Y
 -- In your lazy.nvim plugins file
 return {
   {
-    "hsteinshiromoto/markdown-mover.nvim", -- For GitHub hosted plugin
+    "hsteinshiromoto/markdown_mover.nvim", -- For GitHub hosted plugin
     -- or local plugin in your config
-    -- dir = "~/path/to/markdown-mover.nvim",
+    -- dir = "~/path/to/markdown_mover.nvim",
     -- dev = true, -- For local development
     ft = "markdown",
     opts = {
@@ -46,12 +46,12 @@ For local development inside your Neovim config:
 
 1. Create the directory structure:
    ```bash
-   mkdir -p ~/.config/nvim/lua/markdown-mover
+   mkdir -p ~/.config/nvim/lua/markdown_mover
    ```
 
 2. Copy the plugin code to this location:
    ```bash
-   cp init.lua ~/.config/nvim/lua/markdown-mover/
+   cp init.lua ~/.config/nvim/lua/markdown_mover/
    ```
 
 3. Add the lazy.nvim configuration as shown above with `dev = true`
@@ -59,7 +59,7 @@ For local development inside your Neovim config:
 ## Configuration
 
 ```lua
-require('markdown-mover').setup({
+require('markdown_mover').setup({
   tag_field = "tags",    -- The name of the frontmatter field containing tags
   tag_rules = {
     ["project"] = "docs/projects/",  -- Relative to git root
